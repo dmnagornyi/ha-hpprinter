@@ -34,7 +34,7 @@ SIGNAL_HA_DEVICE_DISCOVERED = f"signal_{DOMAIN}_device_discovered"
 CONFIGURATION_FILE = f"{DOMAIN}.config.json"
 LEGACY_KEY_FILE = f"{DOMAIN}.key"
 
-UPDATE_API_INTERVAL = timedelta(seconds=1)
+UPDATE_API_INTERVAL = timedelta(seconds=5)
 
 DEFAULT_ENTRY_ID = "config"
 CONF_TITLE = "title"
