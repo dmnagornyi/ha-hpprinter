@@ -2,7 +2,9 @@ from datetime import datetime
 import json
 import logging
 import sys
+import socket
 
+from aiohttp.client_exceptions import ClientConnectorError
 from aiohttp import ClientResponseError, ClientSession, ClientTimeout, TCPConnector
 from defusedxml import ElementTree
 from flatten_json import flatten
@@ -445,16 +447,19 @@ class RestAPIv2:
         except Exception as ex:
             exc_type, exc_obj, tb = sys.exc_info()
             line_number = tb.tb_lineno
-
             completed_ts = datetime.now().timestamp()
             time_taken = completed_ts - start_ts
 
-            _LOGGER.error(
-                f"Failed to get {endpoint}, "
-                f"Error: {ex}, "
-                f"Line: {line_number}, "
-                f"Time: {time_taken:.3f}s"
-            )
+            if isinstance(ex, (ClientConnectorError, socket.gaierror, OSError)):
+                _LOGGER.warning(
+                    f"Could not connect to printer at {url} (likely offline or DNS error), "
+                    f"Error: {ex}, Line: {line_number}, Time: {time_taken:.3f}s"
+                )
+            else:
+                _LOGGER.error(
+                    f"Failed to get {endpoint}, "
+                    f"Error: {ex}, Line: {line_number}, Time: {time_taken:.3f}s"
+                )
 
         return result
 
